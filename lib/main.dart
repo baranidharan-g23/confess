@@ -23,9 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Confess',
-      theme: ThemeData(
-        primarySwatch: Colors.purple,
-      ),
+
       //home: const MyHomePage(title: 'Flutter Demo Home Page'),
       home: ChatRoomScreen(),
     );
@@ -66,13 +64,124 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double containerHeight =
+        screenHeight * 0.1; // set container height to 50% of screen height
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.deepPurpleAccent,
         title: Text(
           'Confess Room',
           style: TextStyle(fontSize: 25),
         ),
         actions: [
+          IconButton(
+            icon: Icon(
+              size: 30,
+              Icons.add_circle_outline_outlined,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Join or create Chat room'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            // logic for creating a chat room
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Create Chat Room'),
+                                  content: TextField(
+                                    controller: _chatRoomNameController,
+                                    decoration: InputDecoration(
+                                        hintText: 'Enter Chat Room Name'),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        //creation of the new subcollectiion
+                                        String value =
+                                            _chatRoomNameController.text;
+                                        print(
+                                            "-------------------------------------------------------------------------------------------");
+                                        createDocument('newcon', value);
+                                        _addToList(value);
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Create'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: Text('Create Chat Room'),
+                        ),
+                        SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Join Chat Room'),
+                                  content: TextField(
+                                    controller: _roomIdController,
+                                    decoration: InputDecoration(
+                                        hintText: 'Enter Room ID'),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        String roomId = _roomIdController.text;
+                                        // logic for joining a chat room using the roomId
+                                        String subcoll = '${roomId}_sub';
+                                        // checkDocumentId('newcon', roomId);
+                                        joinSubcollection(
+                                            'newcon', roomId, subcoll);
+                                        _addToList(roomId);
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Join'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: Text('Join Chat Room'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+              // do something
+            },
+          ),
           PopupMenuButton(
             onSelected: (value) async {
               if (value == 'delete') {
@@ -101,126 +210,60 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: _myList.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              onPressed: () {
-                // Navigate to chat screen with selected list item
-                String message =
-                    _myList[index]; // Replace with the message you want to pass
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ChatScreen(message: message)),
-                );
-              },
-              child: Text(_myList[index]),
+      body: Column(
+        children: [
+          SizedBox(
+            height: 20,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(4, 2, 4, 0),
+              child: ListView.builder(
+                itemCount: _myList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                          onTap: () {
+                            String message = _myList[
+                                index]; // Replace with the message you want to pass
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ChatScreen(message: message)),
+                            );
+                          },
+                          child: Center(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                      10.0), // set border radius as per your requirement
+                                  color: Color.fromARGB(255, 125, 82,
+                                      242) // set the background color of the container
+                                  ),
+                              padding: EdgeInsets.all(8),
+                              height: containerHeight * 0.9,
+                              width: screenWidth,
+                              //color: Colors.purple,
+                              child: Center(
+                                child: Text(
+                                  _myList[index],
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 24.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  softWrap: true,
+                                ),
+                              ),
+                            ),
+                          )));
+                },
+              ),
             ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Join or create Chat room'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        // logic for creating a chat room
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Create Chat Room'),
-                              content: TextField(
-                                controller: _chatRoomNameController,
-                                decoration: InputDecoration(
-                                    hintText: 'Enter Chat Room Name'),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Cancel'),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    //creation of the new subcollectiion
-                                    String value = _chatRoomNameController.text;
-                                    print(
-                                        "-------------------------------------------------------------------------------------------");
-                                    createDocument('newcon', value);
-                                    _addToList(value);
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Create'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: Text('Create Chat Room'),
-                    ),
-                    SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Join Chat Room'),
-                              content: TextField(
-                                controller: _roomIdController,
-                                decoration:
-                                    InputDecoration(hintText: 'Enter Room ID'),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Cancel'),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    String roomId = _roomIdController.text;
-                                    // logic for joining a chat room using the roomId
-                                    String subcoll = '${roomId}_sub';
-                                    // checkDocumentId('newcon', roomId);
-                                    joinSubcollection(
-                                        'newcon', roomId, subcoll);
-                                    _addToList(roomId);
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Join'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: Text('Join Chat Room'),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-        child: Icon(Icons.add),
+          ),
+        ],
       ),
     );
   }
