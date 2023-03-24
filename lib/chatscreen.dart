@@ -64,21 +64,21 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         backgroundColor: Colors.deepPurpleAccent,
         toolbarHeight: 70,
-        title: Text('Just Confess',
+        title: const Text('Just Confess',
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 23.0,
                 fontWeight: FontWeight.bold)),
       ),
       body: Container(
-        color: Color.fromARGB(255, 234, 229, 229),
+        color: const Color.fromARGB(255, 234, 229, 229),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: Container(
-                padding: EdgeInsets.fromLTRB(4, 12, 4, 6),
+                padding: const EdgeInsets.fromLTRB(4, 12, 4, 6),
                 //height: 300,
                 child: StreamBuilder<QuerySnapshot>(
                   stream: _messagesCollection.orderBy('timestamp').snapshots(),
@@ -87,48 +87,56 @@ class _ChatScreenState extends State<ChatScreen> {
                     if (snapshot.hasError) {
                       return Text("Error: ${snapshot.error}");
                     }
-
-                    return ListView(
-                      addAutomaticKeepAlives: true,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      //reverse: true,
-                      children:
-                          snapshot.data!.docs.map((DocumentSnapshot document) {
-                        Map<String, dynamic> data =
-                            document.data() as Map<String, dynamic>;
-                        _showMessageNotification(widget.message, data['text']);
-                        return Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: Center(
-                              child: Card(
-                            surfaceTintColor: Colors.deepPurpleAccent,
-                            shadowColor: Colors.deepPurpleAccent,
-                            borderOnForeground: true,
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(7.0),
-                            ),
-                            elevation: 4.0,
-                            child: ListTile(
-                              title: Padding(
-                                padding: EdgeInsets.fromLTRB(2, 8, 2, 8),
-                                child: Flexible(
-                                  child: Text(
-                                    data['text'],
-                                    style: TextStyle(
-                                        fontSize: 17.0,
-                                        color: Colors.deepPurpleAccent,
-                                        fontWeight: FontWeight.bold),
+                    if (snapshot.hasData && snapshot.data != null) {
+                      return ListView(
+                        //physics: const AlwaysScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        //reverse: true,
+                        children: snapshot.data!.docs
+                            .map((DocumentSnapshot document) {
+                          Map<String, dynamic> data =
+                              document.data() as Map<String, dynamic>;
+                          _showMessageNotification(
+                              widget.message, data['text']);
+                          return Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: Center(
+                                child: Card(
+                              surfaceTintColor: Colors.deepPurpleAccent,
+                              shadowColor: Colors.deepPurpleAccent,
+                              borderOnForeground: true,
+                              color: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(7.0),
+                              ),
+                              elevation: 4.0,
+                              child: ListTile(
+                                title: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(2, 8, 2, 8),
+                                  child: Flexible(
+                                    child: Text(
+                                      data['text'],
+                                      style: const TextStyle(
+                                          fontSize: 17.0,
+                                          color: Colors.deepPurpleAccent,
+                                          fontWeight: FontWeight.bold),
+                                    ),
                                   ),
                                 ),
+                                // subtitle: Text(data['timestamp'].toString()),
                               ),
-                              // subtitle: Text(data['timestamp'].toString()),
-                            ),
-                          )),
-                        );
-                      }).toList(),
-                    );
+                            )),
+                          );
+                        }).toList(),
+                      );
+                    } else
+                      return Center(
+                          child: Image(
+                        image: AssetImage("loading.gif"),
+                        width: 50,
+                        height: 50,
+                      ));
                   },
                 ),
               ),
@@ -162,7 +170,8 @@ class _ChatScreenState extends State<ChatScreen> {
                               TextStyle(color: Colors.white.withOpacity(0.8)),
                           border: InputBorder.none,
                         ),
-                        style: TextStyle(color: Colors.white, fontSize: 20),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 20),
                         onChanged: (value) {
                           _message = value;
                         },
@@ -191,7 +200,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       borderRadius: BorderRadius.circular(11.0),
                       shape: BoxShape.rectangle,
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.send,
                       color: Colors.white,
                       size: 35.0,
