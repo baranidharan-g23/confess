@@ -248,7 +248,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                                   borderRadius: BorderRadius.circular(10.0),
                                   gradient: LinearGradient(
                                     colors: [
-                                      Color.fromARGB(255, 171, 144, 246),
+                                      Color.fromARGB(255, 143, 120, 205),
                                       Colors.deepPurpleAccent,
                                     ],
                                     begin: Alignment.topLeft,

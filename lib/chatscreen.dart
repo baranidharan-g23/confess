@@ -48,6 +48,36 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  final ScrollController _scrollController = new ScrollController();
+  bool _firstAutoscrollExecuted = false;
+  bool _shouldAutoscroll = false;
+  void _scrollToBottom() {
+    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+  }
+
+  void _scrollListener() {
+    _firstAutoscrollExecuted = true;
+    if (_scrollController.hasClients &&
+        _scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent) {
+      _shouldAutoscroll = true;
+    } else {
+      _shouldAutoscroll = false;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
@@ -72,8 +102,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 fontWeight: FontWeight.bold)),
       ),
       body: Container(
-        constraints: BoxConstraints.expand(),
-        decoration: BoxDecoration(
+        constraints: const BoxConstraints.expand(),
+        decoration: const BoxDecoration(
             color: Colors.white,
             image: DecorationImage(
                 opacity: 0.7,
@@ -95,9 +125,20 @@ class _ChatScreenState extends State<ChatScreen> {
                       return Text("Error: ${snapshot.error}");
                     }
                     if (snapshot.hasData && snapshot.data != null) {
-                      return ListView(
+                      if (_scrollController.hasClients && _shouldAutoscroll) {
+                        _scrollToBottom();
+                      }
+                      if (!_firstAutoscrollExecuted &&
+                          _scrollController.hasClients) {
+                        _scrollToBottom();
+                      }
+                      return Flexible(
+                          child: ListView(
+                        controller: _scrollController,
+                        //reverse: true,
+
                         //physics: const AlwaysScrollableScrollPhysics(),
-                        shrinkWrap: true,
+                        //shrinkWrap: true,
                         //reverse: true,
                         children: snapshot.data!.docs
                             .map((DocumentSnapshot document) {
@@ -140,14 +181,16 @@ class _ChatScreenState extends State<ChatScreen> {
                             )),
                           );
                         }).toList(),
-                      );
-                    } else
-                      return Center(
-                          child: Image(
+                      ));
+                    } else {
+                      return const Center(
+                          // ignore: unnecessary_const
+                          child: const Image(
                         image: AssetImage("loading.gif"),
                         width: 50,
                         height: 50,
                       ));
+                    }
                   },
                 ),
               ),
