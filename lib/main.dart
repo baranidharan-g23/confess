@@ -210,60 +210,69 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 20,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(4, 2, 4, 0),
-              child: ListView.builder(
-                itemCount: _myList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: GestureDetector(
-                          onTap: () {
-                            String message = _myList[
-                                index]; // Replace with the message you want to pass
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      ChatScreen(message: message)),
-                            );
-                          },
-                          child: Center(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(
-                                      10.0), // set border radius as per your requirement
-                                  color: Color.fromARGB(255, 125, 82,
-                                      242) // set the background color of the container
+      body: Container(
+        constraints: BoxConstraints.expand(),
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                //color: const Color.fromARGB(255, 234, 229, 229),
+                opacity: 0.35,
+                image: AssetImage("background_chatscreen.jpg"),
+                fit: BoxFit.cover)),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 20,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(4, 2, 4, 0),
+                child: ListView.builder(
+                  itemCount: _myList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GestureDetector(
+                            onTap: () {
+                              String message = _myList[
+                                  index]; // Replace with the message you want to pass
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ChatScreen(message: message)),
+                              );
+                            },
+                            child: Center(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(
+                                        10.0), // set border radius as per your requirement
+                                    color: Color.fromARGB(255, 125, 82,
+                                        242) // set the background color of the container
+                                    ),
+                                padding: EdgeInsets.all(8),
+                                height: containerHeight * 0.9,
+                                width: screenWidth,
+                                //color: Colors.purple,
+                                child: Center(
+                                  child: Text(
+                                    _myList[index],
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    softWrap: true,
                                   ),
-                              padding: EdgeInsets.all(8),
-                              height: containerHeight * 0.9,
-                              width: screenWidth,
-                              //color: Colors.purple,
-                              child: Center(
-                                child: Text(
-                                  _myList[index],
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  softWrap: true,
                                 ),
                               ),
-                            ),
-                          )));
-                },
+                            )));
+                  },
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
